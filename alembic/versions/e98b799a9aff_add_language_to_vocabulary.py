@@ -1,8 +1,8 @@
 """add_language_to_vocabulary
 
-Revision ID: 3fbd82b0b568
+Revision ID: e98b799a9aff
 Revises: f60a5910a5d2
-Create Date: 2021-07-12 19:54:15.769070
+Create Date: 2021-07-12 20:49:53.010476
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "3fbd82b0b568"
+revision = "e98b799a9aff"
 down_revision = "f60a5910a5d2"
 branch_labels = None
 depends_on = None
@@ -22,8 +22,8 @@ def upgrade():
         "vocabulary",
         sa.Column(
             "language",
-            sa.Enum("ENGLISH", "FRENCH", "GERMAN", name="language"),
-            nullable=True,
+            sa.Enum("english", "french", "german", name="language"),
+            nullable=False,
         ),
     )
     # ### end Alembic commands ###

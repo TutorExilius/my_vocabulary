@@ -20,4 +20,4 @@ class Vocabulary(Base):
 
     id = Column(INTEGER(11), primary_key=True)
     word = Column(String)
-    language = Column(Enum(Language), default=Language.english)
+    language = Column(Enum(Language), nullable=False)
