@@ -23,7 +23,7 @@ class CardBox(Base, BaseExtension):
     __tablename__ = "cardbox"
 
     # 1 to many relation between CardBox(parent) -> Tray(child)
-    trays = relationship("Tray", back_populates="cardbox", cascade="all, delete-orphan")
+    trays = relationship("Tray", backref="cardbox", cascade="all, delete-orphan")
 
 
 class Tray(Base, BaseExtension):
@@ -32,11 +32,10 @@ class Tray(Base, BaseExtension):
     poll_interval = Column(Integer, nullable=False)
 
     # 1 to many relation between Tray(parent) -> FlashCard(child)
-    flashcards = relationship("FlashCard", back_populates="tray")
+    flashcards = relationship("FlashCard", backref="tray")
 
     # 1 to many relation between CardBox(parent) -> Tray(child)
     cardbox_id = Column(Integer, ForeignKey("cardbox.id"))
-    cardbox = relationship("CardBox", back_populates="trays")
 
 
 class FlashCard(Base, BaseExtension):
@@ -50,11 +49,10 @@ class FlashCard(Base, BaseExtension):
     adult_only = Column(Boolean, default=False)
 
     # 1 to many relation between FlashCard(parent) -> FlashCardPage(child)
-    pages = relationship("FlashCardPage", back_populates="flashcard", cascade="all")
+    pages = relationship("FlashCardPage", backref="flashcard", cascade="all")
 
     # 1 to many relation between Tray(parent) -> FlashCard(child)
     tray_id = Column(Integer, ForeignKey("tray.id"), nullable=False)
-    tray = relationship("Tray", back_populates="flashcards")
 
     def __init__(self, tray):
         self.tray = tray
@@ -67,14 +65,13 @@ class FlashCardPage(Base, BaseExtension):
     # 1 to 1 relation between FlashCardPage(parent) -> Entry(child)
     entry = relationship(
         "Entry",
-        back_populates="flashcardpage",
+        backref="flashcardpage",
         uselist=False,
         cascade="all, delete-orphan",
     )
 
     # 1 to many relation between FlashCard(parent) -> FlashCardPage(child)
     flashcard_id = Column(Integer, ForeignKey("flashcard.id"), nullable=False)
-    flashcard = relationship("FlashCard", back_populates="pages", cascade="all, delete")
 
 
 class Entry(Base, BaseExtension):
@@ -86,11 +83,10 @@ class Entry(Base, BaseExtension):
     is_definition = Column(Boolean, default=False)
 
     # 1 to many relation between Entry(parent) -> Note(child)
-    notes = relationship("Note", back_populates="entry", cascade="all, delete-orphan")
+    notes = relationship("Note", backref="entry", cascade="all, delete-orphan")
 
     # 1 to 1 relation between FlashCardPage(parent) -> Entry(child)
     flashcardpage_id = Column(Integer, ForeignKey("flashcardpage.id"), nullable=False)
-    flashcardpage = relationship("FlashCardPage", back_populates="entry", cascade="all")
 
 
 class Note(Base, BaseExtension):
@@ -100,4 +96,3 @@ class Note(Base, BaseExtension):
 
     # 1 to many relation between Entry(parent) -> Note(child)
     entry_id = Column(Integer, ForeignKey("entry.id"))
-    entry = relationship("Entry", back_populates="notes")

@@ -123,6 +123,9 @@ if __name__ == "__main__":
     cardbox = session.query(CardBox).get(1)
 
     for tray in cardbox.trays:
+        for flashcard in tray.flashcards:
+            session.delete(flashcard)
+
         session.delete(tray)
         session.commit()
         exit()
