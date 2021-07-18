@@ -1,8 +1,8 @@
-"""initial_database
+"""inital_database
 
-Revision ID: 8388049fd49c
+Revision ID: 04e3c52c4ad9
 Revises: 
-Create Date: 2021-07-18 17:07:00.919482
+Create Date: 2021-08-05 23:05:59.439446
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8388049fd49c'
+revision = '04e3c52c4ad9'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,6 +21,8 @@ def upgrade():
     op.create_table('cardbox',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('language_1', sa.String(), nullable=True),
+    sa.Column('language_2', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('tray',
@@ -38,7 +40,6 @@ def upgrade():
     sa.Column('last_poll_date', sa.DateTime(), nullable=True),
     sa.Column('count_right', sa.Integer(), nullable=False),
     sa.Column('count_wrong', sa.Integer(), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('adult_only', sa.Boolean(), nullable=True),
     sa.Column('tray_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['tray_id'], ['tray.id'], ),
@@ -55,9 +56,8 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('text', sa.String(), nullable=False),
-    sa.Column('language', sa.Enum('ENGLISH', 'FRENCH', 'GERMAN', name='language'), nullable=False),
+    sa.Column('language', sa.String(), nullable=False),
     sa.Column('audio_file', sa.String(), nullable=True),
-    sa.Column('is_definition', sa.Boolean(), nullable=True),
     sa.Column('flashcardpage_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['flashcardpage_id'], ['flashcardpage.id'], ),
     sa.PrimaryKeyConstraint('id')

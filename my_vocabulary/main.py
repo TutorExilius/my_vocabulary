@@ -1,11 +1,13 @@
+import sys
 import configparser
 from datetime import datetime as dt
+from my_vocabulary.flashcard_dialog import FlashCardDialog
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from PyQt5.QtWidgets import QApplication
 
 from models.general import (
-    Language,
     Entry,
     Note,
     Tray,
@@ -29,6 +31,8 @@ import logging
 logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
+lang_1 = "Deutsch"
+lang_2 = "Französisch"
 
 def main_3():
     entry = session.query(Entry).get(1)
@@ -44,7 +48,7 @@ def main_2():
 
 
 def main():
-    entry_1 = Entry(text="test", language=Language.ENGLISH)
+    entry_1 = Entry(text="test", language=lang_1)
 
     note_1 = Note(text="this is a example")
     note_2 = Note(text="this is another example")
@@ -69,15 +73,37 @@ def create_notes(entry):
     session.add(note_1)
     session.add(note_2)
 
+example_translations = {
+    lang_1: ["Test", "hallo", "Guten Tag", "Guten Abend", "die Frau", "der Mann", "der Junge", "das Mädchen", "der Ball"],
+    lang_2: ["test", "salut", "Bonjour", "Bonsoir", "la femme", "l'homme (m.)", "le garçon", "la fille", "le balon"]
+}
 
+entry_counter = 0
+word_cnt = 0
 def create_entry(flashcardpage):
-    entry = Entry(text="test", language=Language.ENGLISH, flashcardpage=flashcardpage)
+    global entry_counter, word_cnt
+
+    if entry_counter % 2 == 0:
+        entry = Entry(
+            text=example_translations[lang_1][word_cnt],
+            language=lang_1,
+            flashcardpage=flashcardpage
+        )
+    else:
+        entry = Entry(
+            text=example_translations[lang_2][word_cnt],
+            language=lang_2,
+            flashcardpage=flashcardpage
+        )
+        word_cnt += 1
+
     session.add(entry)
+    entry_counter += 1
     return entry
 
 
 def create_cardbox():
-    cardbox = CardBox()
+    cardbox = CardBox(language_1=lang_1, language_2=lang_2)
 
     tray_1 = Tray(poll_interval=1)
     tray_2 = Tray(poll_interval=3)
@@ -107,17 +133,22 @@ def create_flashcards(cardbox):
             session.add(flashcardpage_2)
 
             flashcard.pages = [flashcardpage_1, flashcardpage_2]
+
+            tray.add_flashcard(flashcard)
             session.add(flashcard)
 
-            tray.flashcards.append(flashcard)
 
 
 if __name__ == "__main__":
     if 0:
+        app = QApplication([])
+        window = FlashCardDialog()
+        window.show()
+        sys.exit(app.exec_())
+    else:
         cardbox = create_cardbox()
         create_flashcards(cardbox)
         session.commit()
-
         exit()
 
     cardbox = session.query(CardBox).get(1)

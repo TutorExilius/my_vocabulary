@@ -8,15 +8,8 @@ from sqlalchemy.types import Boolean, DateTime, Enum, Integer, String
 
 from my_vocabulary.definitions import BaseExtension
 
-
 Base = declarative_base()
 metadata = Base.metadata
-
-
-class Language(enum.Enum):
-    ENGLISH = 0
-    FRENCH = 1
-    GERMAN = 2
 
 
 class CardBox(Base, BaseExtension):
@@ -24,6 +17,8 @@ class CardBox(Base, BaseExtension):
 
     # 1 to many relation between CardBox(parent) -> Tray(child)
     trays = relationship("Tray", backref="cardbox", cascade="all, delete-orphan")
+    language_1 = Column(String)
+    language_2 = Column(String)
 
 
 class Tray(Base, BaseExtension):
@@ -32,10 +27,14 @@ class Tray(Base, BaseExtension):
     poll_interval = Column(Integer, nullable=False)
 
     # 1 to many relation between Tray(parent) -> FlashCard(child)
-    flashcards = relationship("FlashCard", backref="tray")
+    __flashcards = relationship("FlashCard", backref="tray")
 
     # 1 to many relation between CardBox(parent) -> Tray(child)
     cardbox_id = Column(Integer, ForeignKey("cardbox.id"))
+
+    def add_flashcard(self, flashcard):
+        flashcard.last_poll_date = datetime.datetime.utcnow()
+        self.__flashcards.append(flashcard)
 
 
 class FlashCard(Base, BaseExtension):
@@ -45,7 +44,6 @@ class FlashCard(Base, BaseExtension):
     last_poll_date = Column(DateTime)
     count_right = Column(Integer, nullable=False, default=0)
     count_wrong = Column(Integer, nullable=False, default=0)
-    is_active = Column(Boolean, default=True)
     adult_only = Column(Boolean, default=False)
 
     # 1 to many relation between FlashCard(parent) -> FlashCardPage(child)
@@ -78,10 +76,8 @@ class Entry(Base, BaseExtension):
     __tablename__ = "entry"
 
     text = Column(String, nullable=False)
-    language = Column(Enum(Language), nullable=False)
+    language = Column(String, nullable=False)
     audio_file = Column(String)
-    is_definition = Column(Boolean, default=False)
-
     # 1 to many relation between Entry(parent) -> Note(child)
     notes = relationship("Note", backref="entry", cascade="all, delete-orphan")
 
